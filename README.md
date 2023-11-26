@@ -10,6 +10,12 @@
 
 * [UniTask](https://github.com/Cysharp/UniTask)
 
+## 導入方法
+
+### UPM
+
+* https://github.com/TORISOUP/SequentialTaskExecutors?path=Assets/TORISOUP/SequentialTaskExecutors
+
 
 ## 使い方
 
