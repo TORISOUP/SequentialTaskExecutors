@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
@@ -22,17 +23,17 @@ namespace TORISOUP.SequentialTaskExecutors.Demo
             _rawImages = _rootImages.GetComponentsInChildren<RawImage>();
 
             _downloadButton.OnClickAsAsyncEnumerable(destroyCancellationToken)
-                .ForEachAsync( _ =>
+                .ForEachAsync(_ =>
                 {
                     var text = _urlInputField.text;
                     var urls = text.Split('\n');
-                    
+
                     // Texture表示をリセット
                     foreach (var rawImage in _rawImages)
                     {
-                        rawImage.texture =null;
+                        rawImage.texture = null;
                     }
-                    
+
                     // 順番にダウンロードを実行する
                     for (var i = 0; i < _rawImages.Length; i++)
                     {
@@ -40,21 +41,22 @@ namespace TORISOUP.SequentialTaskExecutors.Demo
                         var url = urls[i];
                         DownloadAndSetTextureAsync(url, _rawImages[i], destroyCancellationToken).Forget();
                     }
-                    
                 }, destroyCancellationToken);
             ;
-        }
-
-        private void OnDestroy()
-        {
-            _executor.Dispose();
         }
 
         private async UniTask DownloadAndSetTextureAsync(string url, RawImage rawImage, CancellationToken ct)
         {
             // SequentialTaskExecutorを用いて一度にダウンロードされるのを防ぐ
-            var texture = await _executor.RegisterAsync(DownloadTextureAsync, url, ct);
-            rawImage.texture = texture;
+            try
+            {
+                var texture = await _executor.RegisterAsync(DownloadTextureAsync, url, ct);
+                rawImage.texture = texture;
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                Debug.LogError(ex);
+            }
         }
 
         private static async UniTask<Texture> DownloadTextureAsync(string url, CancellationToken ct)
@@ -63,6 +65,11 @@ namespace TORISOUP.SequentialTaskExecutors.Demo
             await uwr.SendWebRequest().ToUniTask(cancellationToken: ct);
             var texture = DownloadHandlerTexture.GetContent(uwr);
             return texture;
+        }
+
+        private void OnDestroy()
+        {
+            _executor.Dispose();
         }
     }
 }
