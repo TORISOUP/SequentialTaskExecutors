@@ -1,0 +1,17 @@
+{
+    "name": "jp.torisoup.sequentialtaskexecutor",
+    "version": "1.0.0",
+    "displayName": "SequentialTaskExecutor",
+    "description": "This is an example package",
+    "dependencies": {
+        "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask"
+   },
+   "keywords": [
+      "UniTask",
+      "Async"
+    ],
+    "author": {
+      "name": "TORISOUP",
+      "email": "tori.birdstrike@gmail.com"
+    }
+  }
