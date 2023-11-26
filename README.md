@@ -14,8 +14,9 @@
 
 ### UPM Package
 
-* https://github.com/TORISOUP/SequentialTaskExecutors.git?path=Assets/TORISOUP/SequentialTaskExecutors
-
+```
+https://github.com/TORISOUP/SequentialTaskExecutors.git?path=Assets/TORISOUP/SequentialTaskExecutors
+```
 
 ## 使い方
 
