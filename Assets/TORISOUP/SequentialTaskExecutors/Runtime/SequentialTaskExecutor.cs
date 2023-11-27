@@ -80,22 +80,6 @@ namespace TORISOUP.SequentialTaskExecutors
             return autoResetUniTaskCompletionSource.Task;
         }
 
-        public UniTask RegisterAsync<TV>(Func<TV, CancellationToken, UniTask> func,
-            TV value,
-            CancellationToken cancellationToken = default)
-        {
-            lock (_gate)
-            {
-                if (_isDisposed) throw new ObjectDisposedException(nameof(SequentialTaskExecutor));
-            }
-
-            var autoResetUniTaskCompletionSource = AutoResetUniTaskCompletionSource.Create();
-            cancellationToken.Register(() => autoResetUniTaskCompletionSource.TrySetCanceled(cancellationToken));
-            _writer.TryWrite(new AsyncAction(c => func(value, c), autoResetUniTaskCompletionSource,
-                cancellationToken));
-            return autoResetUniTaskCompletionSource.Task;
-        }
-
         public void Dispose()
         {
             lock (_gate)

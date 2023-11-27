@@ -50,7 +50,7 @@ namespace TORISOUP.SequentialTaskExecutors.Demo
             // SequentialTaskExecutorを用いて一度にダウンロードされるのを防ぐ
             try
             {
-                var texture = await _executor.RegisterAsync(DownloadTextureAsync, url, ct);
+                var texture = await _executor.RegisterAsync(t => DownloadTextureAsync(url, t), ct);
                 rawImage.texture = texture;
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
