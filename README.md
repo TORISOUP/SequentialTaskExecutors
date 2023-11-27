@@ -4,7 +4,8 @@
 
 * 登録したUniTaskを順番に実行
 * 登録したUniTaskごとに個別に`await`で待ち受けが可能
-* キャンセル時に登録した処理もすべてキャンセル
+* `SequentialTaskExecutor`を`Dispose`することで実行をすべてキャンセル可能
+* `SequentialTaskExecutor`の再利用はできません
 
 ## 依存ライブラリ
 
