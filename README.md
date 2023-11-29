@@ -3,7 +3,7 @@
 登録したUniTaskを直列で順番に実行する機構です。
 
 * 登録したUniTaskを順番に実行
-* 登録したUniTaskごとに個別に`await`で待ち受けが可能
+* 登録したUniTaskごとに個別に`await`で待ち受け、例外処理が可能
 * `SequentialTaskExecutor`を`Dispose`することで実行をすべてキャンセル可能
 * `SequentialTaskExecutor`の再利用はできません
 
@@ -25,6 +25,7 @@ https://github.com/TORISOUP/SequentialTaskExecutors.git?path=Assets/TORISOUP/Seq
 `Execute()`を呼び出すと直列実行開始。`Dispose()`で全停止して破棄です。再利用はできません。
 
 ```cs
+using System;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -50,20 +51,33 @@ public class Sample : MonoBehaviour
             return 2;
         }, destroyCancellationToken);
 
+        
+        // 登録したタスクの実行完了をawait可能
+        // 例外処理も可能
         UniTask.Void(async () =>
         {
-            // await可能
-            // この場合はRegisterAsyncで登録した非同期処理自体の完了を待機することになる
-            var result = await executor.RegisterAsync(async ct =>
+            try
             {
-                await UniTask.Delay(1000, cancellationToken: ct);
-                return 3;
-            }, destroyCancellationToken);
-            
-            // "3"が出力される
-            Debug.Log(result);
+                // この場合はRegisterAsyncで登録した非同期処理自体の完了を待機することになる
+                var result = await executor.RegisterAsync(async ct =>
+                {
+                    await UniTask.Delay(1000, cancellationToken: ct);
+                    return 3;
+                }, destroyCancellationToken);
+
+                // "3"が出力される
+                Debug.Log(result);
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.Log("Canceled");
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         });
-    
+
         // Execute()を呼び出すことで実行開始
         // 実行開始後にもRegisterAsync()で追加登録可能
         executor.Execute();
